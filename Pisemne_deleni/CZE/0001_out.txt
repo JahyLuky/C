@@ -1,0 +1,6 @@
+Zadejte dve cisla:
+ 1234 : 73 = 16
+ -73
+  504
+ -438
+   66 zbytek

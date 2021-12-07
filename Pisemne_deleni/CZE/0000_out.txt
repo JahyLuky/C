@@ -1,0 +1,6 @@
+Zadejte dve cisla:
+ 546 : 37 = 14
+-37
+ 176
+-148
+  28 zbytek
