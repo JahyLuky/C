@@ -1,0 +1,7 @@
+*.out
+*.vscode/*
+*.tgz
+cmake*
+*.idea
+*.make.*
+*CMake*
