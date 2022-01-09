@@ -41,10 +41,11 @@ int isPalindrom ( char * palin ) {
 
 int main() {
 
-    char * palin = (char*) malloc (100*sizeof (palin));
+    char * palin = NULL;
+    size_t len;
     char a[]="kob bok";
     isPalindrom(a);
-    while ( gets(palin) ) {
+    while ( getline(&palin,&len,stdin) > 0 ) {
         isPalindrom(palin);
     }
     free(palin);
