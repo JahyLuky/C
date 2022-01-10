@@ -5,33 +5,30 @@
 
 typedef struct ean{
     int count;
-    int num;
-    struct ean *next;
+    int order;
+    char * num;
 }Tea;
 
 int compare_ints(const void* a, const void* b){
-    int arg1 = *(const int*)a;
-    int arg2 = *(const int*)b;
- 
-    if (arg1 > arg2) return -1;
-    if (arg1 < arg2) return 1;
+    if (a > b) return -1;
+    if (a < b) return 1;
     return 0;
 }
 
-Tea * newEan ( Tea * b, int ean )
+Tea * newEan ( Tea * b, char * ean )
 {
     Tea * a = (Tea*) malloc (sizeof(Tea));
-    a->num = ean;
+    a->num = strdup(ean);
     a->count = 1;
     a->next = b;
     return a;
 }
 
-int duplicate ( Tea * array, int j, int ean )
+int duplicate ( Tea * array, int j, char * ean )
 {
     for (int i = 0; i < j; i++)
     {
-        if ( array[i].num == ean )
+        if ( strcmp(array[i].num,ean) == 0 )
         {
             return i;
         }
@@ -46,6 +43,7 @@ void freeBostonTea (Tea * a )
         return;
     }
     Tea * tmp = a->next;
+    free(a->num);
     free(a);
     freeBostonTea(tmp);
 }
@@ -58,23 +56,39 @@ void findEAN( Tea * array, int len){
     }
     for (int i = 0; i < len; i++)
     {
-        printf("%d %dx\n", array[i].num, array[i].count);
+        printf("%s %dx\n", array[i].num, array[i].count);
     }
 }
 
 int main ()
 {
-    int ean = 0, i = 0, len = 3, dup = 0;
+    char * ean = (char*) malloc(101*sizeof(char));
+    int i = 0, len = 3, dup = 0, stringLen = 0;
     Tea * a = NULL;
     Tea * array = (Tea*) malloc ( len * sizeof(Tea) );
 
-    while ( scanf("%d", &ean) != EOF )
-    {
+    while ( fgets(ean,sizeof(ean),stdin) != NULL )
+    {   
+        stringLen = strlen(ean);
+        if ( stringLen < 6 || stringLen > 101 )
+        {
+            printf("Nespravy vstup.\n");
+            free(ean);
+            free(array);
+            freeBostonTea(a);
+            return 0;
+        }
+        if ( feof(stdin) )
+        {
+            printf("Nespravy vstup.\n");
+            free(ean);
+            free(array);
+            freeBostonTea(a);
+            return 0;
+        }
         if ( (dup = duplicate(array,i,ean)) >= 0 )
         {
-            //printf("dup: %d\n", dup);
             array[dup].count += 1;
-            //printf("pocet: %d\n", array[dup].count);
             i--;
         }
         else
@@ -82,6 +96,8 @@ int main ()
             a = newEan(a,ean);
             array[i].num = a->num;
             array[i].count = a->count;
+            //free(ean);
+            ean = NULL;
         }
         i++;
         if ( i > (len-1) )
@@ -91,9 +107,12 @@ int main ()
             //printf("realoc\n");
         }
     }
+    free(ean);
     printf("\n");
     findEAN(array, i);
+    for ( int j = 0; j < i; j++){
+        free(array[j].num);
+    }
     freeBostonTea(a);
-    free(array);
     return 1;
 }
