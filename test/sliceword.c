@@ -3,53 +3,16 @@
 #include <string.h>
 #include <ctype.h>
 
-typedef struct ean{
-    int order;
-    int count;
-    char * num;
-}Tea;
-
-int duplicate ( Tea * array, int j, char * ean )
+int isWord ( char * word, int len )
 {
-    for (int i = 0; i < j; i++)
+    for (int i = 0; i < len; i++)
     {
-        if ( strcmp(array[i].num,ean) == 0 )
+        if ( !((*word >= 'a' && *word <= 'z') ||
+         (*word >= 'A' && *word <= 'Z') ))
         {
-            return i;
+            return 0;
         }
-    }
-    return -1;
-}
-
-int compare (const void* a, const void* b){
-    Tea * aa = (Tea*) a;
-    Tea * bb = (Tea*) b;
-    if (aa->count > bb->count) return -1;
-    if (aa->count < bb->count) return 1;
-    if (aa->count == bb->count){
-        return aa->order - bb->order;
-    }
-    return 0;
-}
-
-void findEAN( Tea * array, int len){
-    qsort(array,len,sizeof(Tea),compare);
-    if ( len > 10 )
-    {
-        len = 10;
-    }
-    for (int i = 0; i < len; i++)
-    {
-        array[i].num[strlen(array[i].num)-1]='\0';
-        printf("%s %dx\n", array[i].num, array[i].count);
-    }
-}
-
-int isNum ( char * word, int len )
-{
-    for (int i = 0; i < len; i++)
-    {
-        if ( isdigit(*word) == 0 )
+        if ( isdigit(*word++) == 1 )
         {
             return 0;
         }
@@ -57,83 +20,73 @@ int isNum ( char * word, int len )
     return 1;
 }
 
-void readInput ( Tea * array, int len )
+int slice ( char * word, int len, int min, int max, int cnt )
 {
-    array = (Tea*) malloc( len * sizeof(Tea));
-    char * word = NULL;
-    size_t buffer;
-    int chars = 0, cnt = 0, dup = 0;
-    while ( 1 )
+    char * newWord = (char*) malloc( (len + 2) * sizeof(char));
+    int a = 0;
+    if ( cnt >= min && cnt <= max )
     {
-        chars = getline(&word,&buffer,stdin);
-        if ( feof(stdin) && cnt>0 )
+        free (newWord);
+        return cnt;
+    }
+    newWord[cnt] = ' ';
+    for (int i = 0; i < len; i++)
+    {
+        if ( i == cnt )
         {
-            break;
-        }
-        if ( isNum(word,chars-1) == 0 )
-        {
-            printf("Nespravny vstup.\n");
-            free(word);
-            if ( cnt > 0)
-            {
-                for (int i = 0; i < cnt; i++)
-                {
-                    free(array[i].num);
-                }
-            }
-            free(array);
-            return;
-        }
-        if ( chars < 6 || chars > 101 )
-        {
-            printf("Nespravny vstup.\n");
-            free(word);
-            if ( cnt > 0)
-            {
-                for (int i = 0; i < cnt; i++)
-                {
-                    free(array[i].num);
-                }
-            }
-            free(array);
-            return;
-        }
-        dup=duplicate(array,cnt,word);
-        if ( dup != -1 )
-        {
-            array[dup].count += 1;
-            cnt--;
+            newWord[i+1] = word[i];
+            a = 1;
         }
         else
         {
-            array[cnt].order = cnt;
-            strcpy(array[cnt].num = (char*) malloc( (chars+1) * sizeof(char)),word);
-            //array[cnt].num[chars-1]='\0';
-            array[cnt].count = 1;
-        }
-        cnt++;
-        if ( cnt > (len-1) )
-        {
-            len *= 2;
-            array = (Tea*)realloc(array, len*sizeof(Tea));
+            newWord[i+a] = word[i];
         }
     }
-    free(word);
-    findEAN(array,cnt);
-    if ( cnt > 0) {
-        for (int i = 0; i < cnt; i++)
-        {
-            free(array[i].num);
-        }
-        free(array);
-    }
-    return;
+    newWord[len+1] = '\0';
+    printf("%s\n", newWord);
+    free (newWord);
+    return slice(word,len,min,max,++cnt);
 }
 
-int main ( void ) {
-    int len = 3;
-    Tea * array = NULL;
-    readInput(array, len);
+int checkInput ( )
+{
+    char * word = (char*) malloc( 101 * sizeof(char));
+    int min = 0, max = 0;
 
+    printf("Vstup:\n");
+    scanf("%s", word);
+    int len = strlen(word);
+    if ( isWord(word, len) == 0 )
+    {
+        printf("Nespravny vstup.\n");
+        free(word);
+        return 0;
+    }
+    if ( feof(stdin) )
+    {
+        printf("Nespravny vstup.\n");
+        free(word);
+        return 0;
+    }
+
+    scanf("%d %d", &min, &max);
+    if ( min > max || min <= 0 || max <= 0 )
+    {
+        printf("Nespravny vstup.\n");
+        free(word);
+        return 0;
+    }
+
+    int cnt = 0;
+    cnt = slice(word,len,min,max,cnt);
+    printf("Pocet: %d\n", cnt);
+
+    free(word);
+    return 1;
+}
+
+int main ( void )
+{
+    checkInput();
     return 0;
 }
