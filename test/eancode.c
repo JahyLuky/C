@@ -4,25 +4,10 @@
 #include <ctype.h>
 
 typedef struct ean{
-    int count;
     int order;
+    int count;
     char * num;
 }Tea;
-
-int compare_ints(const void* a, const void* b){
-    if (a > b) return -1;
-    if (a < b) return 1;
-    return 0;
-}
-
-Tea * newEan ( Tea * b, char * ean )
-{
-    Tea * a = (Tea*) malloc (sizeof(Tea));
-    a->num = strdup(ean);
-    a->count = 1;
-    a->next = b;
-    return a;
-}
 
 int duplicate ( Tea * array, int j, char * ean )
 {
@@ -36,83 +21,119 @@ int duplicate ( Tea * array, int j, char * ean )
     return -1;
 }
 
-void freeBostonTea (Tea * a )
-{
-    if (a == NULL)
-    {
-        return;
+int compare (const void* a, const void* b){
+    Tea * aa = (Tea*) a;
+    Tea * bb = (Tea*) b;
+    if (aa->count > bb->count) return -1;
+    if (aa->count < bb->count) return 1;
+    if (aa->count == bb->count){
+        return aa->order - bb->order;
     }
-    Tea * tmp = a->next;
-    free(a->num);
-    free(a);
-    freeBostonTea(tmp);
+    return 0;
 }
 
 void findEAN( Tea * array, int len){
-    qsort(array,len,sizeof(Tea),compare_ints);
+    qsort(array,len,sizeof(Tea),compare);
     if ( len > 10 )
     {
         len = 10;
     }
     for (int i = 0; i < len; i++)
     {
+        array[i].num[strlen(array[i].num)-1]='\0';
         printf("%s %dx\n", array[i].num, array[i].count);
     }
 }
 
-int main ()
+int isNum ( char * word, int len )
 {
-    char * ean = (char*) malloc(101*sizeof(char));
-    int i = 0, len = 3, dup = 0, stringLen = 0;
-    Tea * a = NULL;
-    Tea * array = (Tea*) malloc ( len * sizeof(Tea) );
+    for (int i = 0; i < len; i++)
+    {
+        if ( isdigit(*word) == 0 )
+        {
+            return 0;
+        }
+    }
+    return 1;
+}
 
-    while ( fgets(ean,sizeof(ean),stdin) != NULL )
-    {   
-        stringLen = strlen(ean);
-        if ( stringLen < 6 || stringLen > 101 )
+void readInput ( Tea * array, int len )
+{
+    array = (Tea*) malloc( len * sizeof(Tea));
+    char * word = NULL;
+    size_t buffer;
+    int chars = 0, cnt = 0, dup = 0;
+    while ( 1 )
+    {
+        chars = getline(&word,&buffer,stdin);
+        if ( feof(stdin) && cnt>0 )
         {
-            printf("Nespravy vstup.\n");
-            free(ean);
-            free(array);
-            freeBostonTea(a);
-            return 0;
+            break;
         }
-        if ( feof(stdin) )
+        if ( isNum(word,chars-1) == 0 )
         {
-            printf("Nespravy vstup.\n");
-            free(ean);
+            printf("Nespravny vstup.\n");
+            free(word);
+            if ( cnt > 0)
+            {
+                for (int i = 0; i < cnt; i++)
+                {
+                    free(array[i].num);
+                }
+            }
             free(array);
-            freeBostonTea(a);
-            return 0;
+            return;
         }
-        if ( (dup = duplicate(array,i,ean)) >= 0 )
+        if ( chars < 6 || chars > 101 )
+        {
+            printf("Nespravny vstup.\n");
+            free(word);
+            if ( cnt > 0)
+            {
+                for (int i = 0; i < cnt; i++)
+                {
+                    free(array[i].num);
+                }
+            }
+            free(array);
+            return;
+        }
+        dup=duplicate(array,cnt,word);
+        if ( dup != -1 )
         {
             array[dup].count += 1;
-            i--;
+            cnt--;
         }
         else
         {
-            a = newEan(a,ean);
-            array[i].num = a->num;
-            array[i].count = a->count;
-            //free(ean);
-            ean = NULL;
+            array[cnt].order = cnt;
+            strcpy(array[cnt].num = (char*) malloc( (chars+1) * sizeof(char)),word);
+            //array[cnt].num[chars-1]='\0';
+            array[cnt].count = 1;
         }
-        i++;
-        if ( i > (len-1) )
+        cnt++;
+        if ( cnt > (len-1) )
         {
             len *= 2;
             array = (Tea*)realloc(array, len*sizeof(Tea));
-            //printf("realoc\n");
         }
     }
-    free(ean);
-    printf("\n");
-    findEAN(array, i);
-    for ( int j = 0; j < i; j++){
-        free(array[j].num);
+    free(word);
+    findEAN(array,cnt);
+    if ( cnt > 0) {
+        for (int i = 0; i < cnt; i++)
+        {
+            free(array[i].num);
+        }
+        free(array);
     }
-    freeBostonTea(a);
-    return 1;
+    return;
+}
+
+int main ( void ) {
+    int len = 3;
+    Tea * array = NULL;
+    readInput(array, len);
+
+    return 0;
 }

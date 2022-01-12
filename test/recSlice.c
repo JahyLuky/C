@@ -7,12 +7,7 @@ int isWord ( char * word, int len )
 {
     for (int i = 0; i < len; i++)
     {
-        if ( !((*word >= 'a' && *word <= 'z') ||
-         (*word >= 'A' && *word <= 'Z') ))
-        {
-            return 0;
-        }
-        if ( isdigit(*word++) == 1 )
+        if ( isdigit(*word++) == 0 )
         {
             return 0;
         }
@@ -20,43 +15,47 @@ int isWord ( char * word, int len )
     return 1;
 }
 
-int slice ( char * word, int len, int min, int max, int cnt )
+int slice ( char * word, int len, int space, int pos, int cnt )
 {
-    char * newWord = (char*) malloc( (len + 2) * sizeof(char));
+    char * newWord = (char*) malloc( 101 * sizeof(char));
     int a = 0;
-    if ( cnt >= min && cnt <= max )
+    if ( space >= (len-1) || pos >= (len-1) )
     {
-        free (newWord);
+        free(newWord);
         return cnt;
     }
-    newWord[cnt] = ' ';
-    for (int i = 0; i < len; i++)
+    newWord[pos] = ' ';
+    for (int i = 0; i < len+pos-1; i++)
     {
         if ( i == cnt )
         {
             newWord[i+1] = word[i];
-            a = 1;
+            a = pos;
         }
         else
         {
             newWord[i+a] = word[i];
         }
     }
-    newWord[len+1] = '\0';
-    printf("%s\n", newWord);
-    free (newWord);
-    return slice(word,len,min,max,++cnt);
+    newWord[len] = '\0';
+    for (int i = 0; i < len; i++)
+    {
+        word[i] = newWord[i];
+    }
+    printf("%s\n", word);
+    free(newWord);
+    return slice(word,len,space,++pos,++cnt);
 }
 
 int checkInput ( )
 {
     char * word = (char*) malloc( 101 * sizeof(char));
-    int min = 0, max = 0;
+    int min = 0, max = 0, len = 0;
+    size_t buffer;
 
     printf("Vstup:\n");
-    scanf("%s", word);
-    int len = strlen(word);
-    if ( isWord(word, len) == 0 )
+    len = getline(&word,&buffer,stdin);
+    if ( isWord(word, len-1) == 0 || len < 1 || len > 101 )
     {
         printf("Nespravny vstup.\n");
         free(word);
@@ -68,7 +67,7 @@ int checkInput ( )
         free(word);
         return 0;
     }
-
+    word[len-1]='\0';
     scanf("%d %d", &min, &max);
     if ( min > max || min <= 0 || max <= 0 )
     {
@@ -77,9 +76,10 @@ int checkInput ( )
         return 0;
     }
 
-    int cnt = 0;
-    cnt = slice(word,len,min,max,cnt);
-    printf("Pocet: %d\n", cnt);
+    int cnt = 1;
+    printf("%s\n", word);
+    cnt = slice(word,len,0,1,cnt);
+    printf("Celkem: %d\n", cnt);
 
     free(word);
     return 1;

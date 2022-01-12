@@ -4,38 +4,35 @@
 #include <ctype.h>
 #include <assert.h>
 
-int sameWords ( const char * a, const char * b )
+int getNum ( char digit )
 {
-    int len = strlen(a);
-    char * p = strdup(a);
-    //newA = strdup(a);
-    //strcpy(newA,a);
-    char tmp[100];
-    char * newA;
-    
-    for (int i = 0; i < len; i++)
+    if ( digit >= '0' || digit <= '9' )
     {
-        if ( isalpha(*p) != 0 )
-        {
-            newA = p;
-            tmp = p[i];
-            //printf("%s\n", newA);
-            //printf("%s\n", tmp);
-        }
-        else
-        {
-            //word comapare
-            printf("%s\n", tmp);
-            //printf("2 %s\n", p);
-        }
-        p++;
+        digit = digit - '0';
+        return digit;
     }
-    //printf("newa: %s\n", newA);
-    //free(tmp);
-    return 0;
+    else if ( digit <= 'F' )
+    {
+        return digit;
+    }
 }
 
 int main ( int argc, char * argv [] )
 {
-  sameWords ( "9 Hello: a students", "HELLO studEnts" );
+  char a[] = "A";
+  int array[100];
+  for (int i = 0; i < strlen(a); i++)
+  {
+    array[i] = getNum(a[i]);
+    printf("%d", array[i]);
+  }
+  
+  int hex = 1, num = 0;
+  for (int i = 0; i < strlen(a); i++)
+  {
+    num += array[i] * hex;
+    hex *= 16;
+  }
+  printf("\ndec: %d\n", num);
+  return 0;
 }
