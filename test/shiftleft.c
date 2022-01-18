@@ -8,9 +8,16 @@ typedef struct Tnode
 {
     struct Tnode * m_Next;
     char m_Digit;
-    
-}TNODE;
+} TNODE;
 
+/*!
+ * Creates a linked list.
+ * 
+ * \param[in] digit represent HEX number.
+ * \param[in] next pointer to the next linked list.
+ *
+ * \return pointer to linked list.
+ */
 TNODE * createNode ( char digit, TNODE * next  )
 {
     TNODE * a = (TNODE*) malloc(sizeof(TNODE));
@@ -19,6 +26,12 @@ TNODE * createNode ( char digit, TNODE * next  )
     return a;
 }
 
+/*!
+ * Free all parametres (and pointer) in linked list.
+ *
+ * \param[in] a pointer to linked list.
+ * \return nothing.
+ */
 void deleteList ( TNODE * a )
 {
     if ( a == NULL )
@@ -30,6 +43,13 @@ void deleteList ( TNODE * a )
     deleteList(tmp);
 }
 
+/*!
+ * Converts char to int.
+ *
+ * \param[in] digit HEX number as char.
+ *
+ * \return converter char to int.
+ */
 int getNum ( char digit )
 {
     int num = 0;
@@ -71,6 +91,14 @@ int getNum ( char digit )
     return num;
 }
 
+/*!
+ * Binary shift the value of linked list.
+ *
+ * \param[in] a pointer to linked list.
+ * \param[in] shift number that binary shift our linked list.
+ *
+ * \return pointer to the new shifted linked list.
+ */
 TNODE * shiftLeft ( TNODE * a, unsigned int shift )
 {
     if ( a == NULL )
@@ -82,6 +110,7 @@ TNODE * shiftLeft ( TNODE * a, unsigned int shift )
     while ( a )
     {
         num = getNum(a->m_Digit);
+        // taking care of valid input
         if ( num == (-1) || 
         (num == 0 && j == 0 ) )
         {
@@ -94,6 +123,7 @@ TNODE * shiftLeft ( TNODE * a, unsigned int shift )
     }
     int hex = 1;
     num = 0;
+    // conversion from Hex to Dec
     for (int i = 0; i < j; i++)
     {
         num += array[i] * hex;
@@ -103,7 +133,7 @@ TNODE * shiftLeft ( TNODE * a, unsigned int shift )
     num = num << shift;
     TNODE * b = NULL;
     char * getHexa = (char*) malloc(10*sizeof(char));
-
+    // "%x" convert int into Hex format, sprintf save output to 'getHexa'
     sprintf(getHexa, "%x", num);
     int len = strlen(getHexa);
     for (int z = 0; z < len; z++)
