@@ -66,7 +66,7 @@ int checkIn ( Tean ** arr, int n, char * ean )
 
 int main ( void )
 {
-  char inf[2];
+  char inf[2], yx;
   int cnt = 0, n = 0, now = 0;
   char ean[101];
   Tean ** arr = (Tean**) malloc( 100 * sizeof(Tean*) );
@@ -77,7 +77,7 @@ int main ( void )
     scanf("%s", inf);
     if ( inf[0] != '+' && inf[0] != '-' )
     {
-      printf("Spatny znak\n");
+      printf("Spatny\n");
       freeNode(arr,n);
       return 0;
     }
@@ -91,7 +91,13 @@ int main ( void )
     
     if ( inf[0] == '+' )
     {
-      scanf(" %dx %s", &cnt, ean);
+      scanf(" %d%c %s", &cnt, &yx, ean);
+      if ( yx != 'x' )
+      {
+        printf("Chybi x\n");
+        freeNode(arr,n);
+        return 0;
+      }
       if ( checkIn(arr,n,ean) == 0 ) {
         return 0;
       }
@@ -112,7 +118,13 @@ int main ( void )
     }
     if ( inf[0] == '-' )
     {
-      scanf(" %dx %s", &cnt, ean);
+      scanf(" %d%c %s", &cnt, &yx, ean);
+      if ( yx != 'x' )
+      {
+        printf("Chybi x\n");
+        freeNode(arr,n);
+        return 0;
+      }
       if ( checkIn(arr,n,ean) == 0 ) {
         return 0;
       }
