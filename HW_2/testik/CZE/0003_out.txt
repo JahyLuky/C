@@ -1,0 +1,8 @@
+Zadejte dve cisla:
+ 1000 : 10 = 100
+-10
+   0
+   0
+    0
+    0
+    0 zbytek

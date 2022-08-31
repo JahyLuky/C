@@ -1,0 +1,4 @@
+Zadejte dve cisla:
+ 123 : 4567 = 0
+   0
+ 123 zbytek
