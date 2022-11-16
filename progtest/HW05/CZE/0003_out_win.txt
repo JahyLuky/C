@@ -1,3 +1,0 @@
-Vstupni posloupnost:
-Testovane hodnoty:
-Nespravny vstup.
