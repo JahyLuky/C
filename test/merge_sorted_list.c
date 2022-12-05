@@ -14,22 +14,22 @@ SinglyLinkedListNode * insert_tail ( SinglyLinkedListNode * head, int data )
 {
   if ( head == NULL )
   {
-  head = (SinglyLinkedListNode *) malloc(sizeof(SinglyLinkedListNode));
-  head->next = NULL;
-  head->data = data;
-  return head;
+    head = (SinglyLinkedListNode *) malloc(sizeof(SinglyLinkedListNode));
+    head->next = NULL;
+    head->data = data;
+    return head;
   }
   else
   {
-  SinglyLinkedListNode * newhead = head;
-  while( head->next != NULL )
+    SinglyLinkedListNode * newhead = head;
+    while( head->next != NULL )
   {
     head=head->next;
   }
-  head->next = (SinglyLinkedListNode *) malloc(sizeof(SinglyLinkedListNode));
-  head->next->next = NULL;
-  head->next->data = data;
-  return newhead;
+    head->next = (SinglyLinkedListNode *) malloc(sizeof(SinglyLinkedListNode));
+    head->next->next = NULL;
+    head->next->data = data;
+    return newhead;
   }
 }
 
