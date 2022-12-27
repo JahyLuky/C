@@ -1,214 +1,205 @@
+#ifndef __PROGTEST__
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 #include <ctype.h>
-
-typedef struct poly
+ 
+typedef struct TItem
 {
-  int num;
-  int moc;
-  struct poly * next;
-} TNODE;
-
-TNODE * createNode ( TNODE * a, int num, int moc )
+    struct TItem * m_Next;
+    int m_Mul;
+    int m_Pow;
+} TITEM;
+ 
+TITEM * createItem ( int mul, int pow, TITEM * next )
 {
-  TNODE * b = (TNODE*) malloc(sizeof(TNODE));
-  b->num = num;
-  b->moc = moc;
-  b->next = a;
-  return b;
+    TITEM * n = (TITEM *) malloc (sizeof ( *n ));
+    n -> m_Mul = mul;
+    n -> m_Pow = pow;
+    n -> m_Next = next;
+    return n;
+}
+ 
+void deleteList (TITEM * l)
+{
+    while (l)
+    {
+        TITEM * tmp = l -> m_Next;
+        free (l);
+        l = tmp;
+    }
+}
+#endif /* __PROGTEST__ */
+
+void deleteList1 (TITEM * l)
+{
+    //if (l == NULL) {return;}
+    while (l)
+    {
+        printf("free: %d ^ %d\n", l->m_Mul, l->m_Pow);
+        TITEM * tmp = l -> m_Next;
+        free (l);
+        l = tmp;
+    }
 }
 
-void freeNode ( TNODE * a )
-{
-  if ( a== NULL )
-  {
-    return;
-  }
-  TNODE * tmp = a->next;
-  free(a);
-  freeNode(tmp);
+int check (TITEM * a, int start, int last) {
+    if (a->m_Pow <= last) {
+        //printf("a) mul: %d, pow: %d, start: %d, last: %d\n", a->m_Mul, a->m_Pow, start, last);
+        return 0;
+    }
+    if (a->m_Mul == 0 && a->m_Pow == 0 && last == -1 && a->m_Next == NULL) return 1;
+    if (a->m_Mul == 0) {
+        //printf("b) mul: %d, pow: %d, start: %d, last: %d\n", a->m_Mul, a->m_Pow, start, last);
+        return 0;
+    }
+    //printf("good) mul: %d, pow: %d, start: %d, last: %d\n", a->m_Mul, a->m_Pow, start, last);
+    return 1;
 }
 
-TNODE * copyNode ( TNODE * a )
-{
-  TNODE * head_a = a;
-  while ( a )
-  {
-    if ( a->next != NULL )
-    {
-      if ( a->moc > a->next->moc )
-      {
-        return NULL;
-      }
-      if (a->moc==NULL)
-      {
-        return NULL;
-      }
+TITEM * addPoly ( TITEM * x , TITEM * y ) {
+    TITEM * a = x;
+    TITEM * b = y;
+    if (a == NULL || b == NULL) return NULL;
+
+    TITEM * c = NULL;
+    TITEM * head_c = NULL;
+    int sum = 0, start = 1, a_last = -1, b_last = -1;
+    
+    while (a != NULL || b != NULL) {
+        //-------------------------------
+        if (a == NULL) {
+            if (check(b, start, b_last) == 0) {
+                printf("ahoj\n");
+                deleteList1(head_c);
+                return NULL;
+            }
+            b_last = b->m_Pow;
+            sum = b->m_Mul;
+            c = createItem(sum, b_last, NULL);
+            //printf("c: %d ^ %d\n", c->m_Mul, c->m_Pow);
+            b = b->m_Next;
+            c = c->m_Next;
+            continue;
+        }
+        //-------------------------------
+        if (b == NULL) {
+            if (check(a, start, a_last) == 0) {
+                deleteList1(head_c);
+                return NULL;
+            }
+            a_last = a->m_Pow;
+            c = createItem(a->m_Mul, a->m_Pow, NULL);
+            a = a->m_Next;
+            c = c->m_Next;
+            continue;
+        }
+        //-------------------------------
+        if (a != NULL && b != NULL) {
+            if (check(a, start, a_last) == 0) {
+                deleteList1(head_c);
+                return NULL; 
+            }
+            if (check(b, start, b_last) == 0) {
+                deleteList1(head_c);
+                return NULL;
+            }
+            sum = a->m_Mul + b->m_Mul;
+            if (sum == 0) {
+                if (sum == 0 && start == 1 &&
+                 a->m_Next == NULL && b->m_Next == NULL) {
+                    c = createItem(0, 0, NULL);
+                    return c;
+                }
+                a_last = a->m_Pow;
+                b_last = b->m_Pow;
+                a = a->m_Next;
+                b = b->m_Next;
+                continue;
+            }
+            a_last = a->m_Pow;
+            b_last = b->m_Pow;
+            c = createItem(sum, a->m_Pow, NULL);
+            a = a->m_Next;
+            b = b->m_Next;
+
+            if (start == 1) {
+                start = 0;
+                head_c = c;
+                //printf("head: %d ^ %d\n", head_c->m_Mul, head_c->m_Pow);
+            }
+            c = c->m_Next;
+        }
     }
-    a = a->next;
-  }
-  a = head_a;
-  TNODE * c = (TNODE*) malloc(sizeof(TNODE));
-  TNODE * head_c = c;
-  while ( a )
-  {
-    if ( a->next == NULL )
-    {
-      c->next = NULL;
-      c->num = a->num;
-      c->moc = a->moc;
-    }
-    else
-    {
-      c->next = (TNODE*) malloc(sizeof(TNODE));
-      c->moc = a->moc;
-      c->num = a->num;
-      c = c->next;
-    }
-    a = a->next;
-  }
-  return head_c;
+    return head_c;
 }
-
-TNODE * getPoly ( TNODE * a, TNODE * b )
+ 
+#ifndef __PROGTEST__
+int main ( int argc, char * argv [] )
 {
-  if ( a == NULL && b != NULL )
-  {
-    TNODE * c = copyNode(b);
-    return c;
-  }
-  if ( a != NULL && b == NULL )
-  {
-    TNODE * c = copyNode(a);
-    return c;
-  }
-  if ( a == NULL && b == NULL )
-  {
-    return NULL;
-  }
-  if ( a->num == 0 && a->moc == 0 && a->next == NULL )
-  {
-    TNODE * c = copyNode(b);
-    return c;
-  }
-  if ( b->num == 0 && b->moc == 0 && b->next == NULL )
-  {
-    TNODE * c = copyNode(a);
-    return c;
-  }
+    TITEM * a, * b;
+    TITEM * res = NULL;
+/*
+    a = createItem (3,1,createItem (-2,2,createItem (4,3,NULL)));
+    b = createItem (-3,1,createItem (2,2,createItem (-4,3,NULL)));
+    res = addPoly(a,b);
+    assert ( res -> m_Mul == 0 );
+    assert ( res -> m_Pow == 0 );
+    assert ( res -> m_Next == NULL );
+    deleteList ( a );
+    deleteList ( b );
+    deleteList ( res );
+*/
+/*
+    a = createItem (2,1,NULL);
+    b = createItem (0,0,NULL);
+    res = addPoly(a,b);
+    assert ( res -> m_Mul == 2 );
+    assert ( res -> m_Pow == 1 );
+    assert ( res -> m_Next == NULL );
+    deleteList ( a );
+    deleteList ( b );
+    deleteList ( res );
+ */
+ 
+    a = createItem (2,1,NULL);
+    b = createItem (3,1,createItem (4,2,createItem (2,3,createItem(1,0,NULL))));
+    res = addPoly(a,b);
+    assert ( res == NULL );
+    deleteList ( a );
+    deleteList ( b );
+    deleteList ( res );
 
-  TNODE * head_b = b;
-  while ( b )
-  {
-    if ( b->next != NULL )
-    {
-      if ( b->moc > b->next->moc )
-      {
-        return NULL;
-      }
-      if (b->moc==NULL)
-      {
-        return NULL;
-      }
-    }
-    b = b->next;
-  }
-  b = head_b;
-  //copy 'a' to 'c'
-  TNODE * c = copyNode(a);
-  if ( c == NULL )
-  {
-    return NULL;
-  }
-  TNODE * head_c = c;
-
-  c = head_c;
-  while ( b )
-  {
-    if ( b->moc == c->moc )
-    {
-      c->num += b->num;
-      c = c->next;
-      b = b->next;
-    }
-    else if ( b->moc < c->moc )
-    {
-      TNODE * tmp = (TNODE*) malloc(sizeof(TNODE));
-      tmp->num = c->num;
-      tmp->moc = c->moc;
-      tmp->next = c->next;
-
-      c->moc = b->moc;
-      c->num = b->num;
-      c->next = tmp;
-
-      b = b->next;
-    }
-    else
-    {
-      c = c->next;
-    }
-  }
-  return head_c;
+/*
+    a = createItem (2,1,NULL);
+    b = createItem (3,1,createItem (4,1,NULL));
+    res = addPoly(a,b);
+    assert ( res == NULL );
+    deleteList ( a );
+    deleteList ( b );
+    deleteList ( res );
+    */
+/*
+    a = createItem (3,0,createItem (2,1,createItem (9,3,NULL)));
+    b = createItem (0,0,createItem (4,2,createItem (-1,3,NULL)));
+    res = addPoly(a,b);
+    assert ( res == NULL );
+    deleteList ( a );
+    deleteList ( b );
+    deleteList ( res );
+    */
+ /*
+    a = createItem (3,0,createItem (2,1,createItem (5,3,NULL)));
+    b = createItem (-7,0,createItem (-2,1,createItem (-5,3,NULL)));
+    res = addPoly(a,b);
+    assert ( res -> m_Mul == -4 );
+    assert ( res -> m_Pow == 0 );
+    assert ( res -> m_Next == NULL );
+    deleteList ( a );
+    deleteList ( b );
+    deleteList ( res );
+*/
+    return 0;
 }
-
-int main ( void )
-{
-  TNODE * a = NULL;
-  TNODE * head_a = NULL;
-  TNODE * b = NULL;
-  TNODE * head_b = NULL;
-  TNODE * c = NULL;
-  TNODE * head_c = NULL;
-  
-  a = createNode(a,9,3);
-  a = createNode(a,2,1);
-  a = createNode(a,3,0);
-  head_a = a;
-  /*
-  a = createNode(a,9,3);
-  a = createNode(a,2,4);
-  a = createNode(a,3,0);
-  head_a = a;
-  */
-  
-  b = createNode(b,-1,3);
-  b = createNode(b,4,2);
-  b = createNode(b,7,0);
-  head_b = b;
-  
-  /*
-  b = createNode(b,7,NULL);
-  head_b = b;
-  */
-  /*
-  b = createNode(b,0,0);
-  head_b = b;
-  */
-  /*
-  b = createNode(b,-1,3);
-  b = createNode(b,4,4);
-  b = createNode(b,7,0);
-  head_b = b;
-  */
-  c = getPoly( a, b );
-  head_c = c;
-
-  if ( c != NULL )
-  {
-    while (c)
-    {
-      printf("%d^%d\n",c->num,c->moc);
-      c = c->next;
-    }
-  }
-
-  a = head_a;
-  b = head_b;
-  c = head_c;
-  if (a != NULL){freeNode(a);}
-  if (b != NULL){freeNode(b);}
-  if (c != NULL){freeNode(c);}
-  return 0;
-}
+#endif /* __PROGTEST__ */
