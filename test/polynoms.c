@@ -12,11 +12,11 @@ typedef struct TItem
     int m_Pow;
 } TITEM;
  
-TITEM * createItem ( int mul, int pow, TITEM * next )
+TITEM * createItem ( int mul, int p, TITEM * next )
 {
     TITEM * n = (TITEM *) malloc (sizeof ( *n ));
     n -> m_Mul = mul;
-    n -> m_Pow = pow;
+    n -> m_Pow = p;
     n -> m_Next = next;
     return n;
 }
@@ -78,7 +78,7 @@ TITEM * addPoly ( TITEM * x , TITEM * y ) {
             b_last = b->m_Pow;
             sum = b->m_Mul;
             c = createItem(sum, b_last, NULL);
-            //printf("c: %d ^ %d\n", c->m_Mul, c->m_Pow);
+            printf("c: %d ^ %d\n", c->m_Mul, c->m_Pow);
             b = b->m_Next;
             c = c->m_Next;
             continue;
@@ -163,6 +163,14 @@ int main ( int argc, char * argv [] )
     deleteList ( res );
  */
  
+    TITEM * c = NULL;
+    c = createItem(1,1, NULL);
+    TITEM * h = c;
+    c = c->m_Next;
+    c = createItem(2,2 , NULL);
+    deleteList1(h);
+
+/*
     a = createItem (2,1,NULL);
     b = createItem (3,1,createItem (4,2,createItem (2,3,createItem(1,0,NULL))));
     res = addPoly(a,b);
@@ -170,7 +178,7 @@ int main ( int argc, char * argv [] )
     deleteList ( a );
     deleteList ( b );
     deleteList ( res );
-
+*/
 /*
     a = createItem (2,1,NULL);
     b = createItem (3,1,createItem (4,1,NULL));
