@@ -25,6 +25,7 @@ void deleteList (TITEM * l)
 {
     while (l)
     {
+        printf("a): %d ^ %d\n", l->m_Mul, l->m_Pow);
         TITEM * tmp = l -> m_Next;
         free (l);
         l = tmp;
@@ -34,83 +35,97 @@ void deleteList (TITEM * l)
 
 void deleteList1 (TITEM * l)
 {
-    //if (l == NULL) {return;}
     while (l)
     {
-        printf("free: %d ^ %d\n", l->m_Mul, l->m_Pow);
+        printf("b): %d ^ %d\n", l->m_Mul, l->m_Pow);
         TITEM * tmp = l -> m_Next;
         free (l);
         l = tmp;
     }
 }
 
-int check (TITEM * a, int start, int last) {
-    if (a->m_Pow <= last) {
-        //printf("a) mul: %d, pow: %d, start: %d, last: %d\n", a->m_Mul, a->m_Pow, start, last);
-        return 0;
+int check (TITEM * a, int last) {
+    if (a != NULL) {
+        if (a->m_Pow <= last) {printf("a\n");return 1;}
+        if (a->m_Mul == 0 && a->m_Pow == 0 
+            && a->m_Next == NULL) {return 0;}
+        if (a->m_Mul == 0) {printf("b\n"); return 1;}
     }
-    if (a->m_Mul == 0 && a->m_Pow == 0 && last == -1 && a->m_Next == NULL) return 1;
-    if (a->m_Mul == 0) {
-        //printf("b) mul: %d, pow: %d, start: %d, last: %d\n", a->m_Mul, a->m_Pow, start, last);
-        return 0;
-    }
-    //printf("good) mul: %d, pow: %d, start: %d, last: %d\n", a->m_Mul, a->m_Pow, start, last);
-    return 1;
+    return 0; 
 }
 
 TITEM * addPoly ( TITEM * x , TITEM * y ) {
     TITEM * a = x;
     TITEM * b = y;
-    if (a == NULL || b == NULL) return NULL;
+    if (!a || !b) return NULL;
+    TITEM *aa = x;
+    TITEM *bb = y;
+    int a_last = -1, b_last = -1, sum = 0;
+    while (aa != NULL || bb != NULL) {
+        if (check(aa, a_last)) {
+            return NULL;
+        }
+        if (check(bb, b_last)) {
+            return NULL;
+        }
+        if (aa != NULL && bb == NULL) {
+            a_last = aa->m_Pow;
+            aa = aa->m_Next;
+        }
+        if (bb != NULL && aa == NULL) {
+            b_last = bb->m_Pow;
+            bb = bb->m_Next;
+        }
+        if (aa != NULL && bb != NULL) {
+            a_last = aa->m_Pow;
+            aa = aa->m_Next;
+            b_last = bb->m_Pow;
+            bb = bb->m_Next;
+        }
+    }
 
-    TITEM * c = NULL;
-    TITEM * head_c = NULL;
-    int sum = 0, start = 1, a_last = -1, b_last = -1;
-    
-    while (a != NULL || b != NULL) {
-        //-------------------------------
-        if (a == NULL) {
-            if (check(b, start, b_last) == 0) {
-                printf("ahoj\n");
-                deleteList1(head_c);
-                return NULL;
-            }
-            b_last = b->m_Pow;
+    TITEM * c = (TITEM*) malloc(sizeof(*c));
+    TITEM * head = c;
+    while (a || b) {
+        if (!a) {
             sum = b->m_Mul;
-            c = createItem(sum, b_last, NULL);
-            printf("c: %d ^ %d\n", c->m_Mul, c->m_Pow);
+            b_last = b->m_Pow;
+            c->m_Mul = sum;
+            c->m_Pow = b_last;
+            if (b->m_Next == NULL) {
+                c->m_Next = NULL;
+                b = b->m_Next;
+                continue;
+            }
+            c->m_Next = (TITEM*) malloc(sizeof(*c));
+            c = c->m_Next;
             b = b->m_Next;
-            c = c->m_Next;
             continue;
         }
-        //-------------------------------
-        if (b == NULL) {
-            if (check(a, start, a_last) == 0) {
-                deleteList1(head_c);
-                return NULL;
-            }
+        if (!b) {
+            sum = a->m_Mul;
+            c->m_Mul = sum;
             a_last = a->m_Pow;
-            c = createItem(a->m_Mul, a->m_Pow, NULL);
-            a = a->m_Next;
+            c->m_Pow = a_last;
+            if (a->m_Next == NULL) {
+                c->m_Next = NULL;
+                a = a->m_Next;
+                continue;
+            }
+            c->m_Next = (TITEM*) malloc(sizeof(*c));
             c = c->m_Next;
+            a = a->m_Next;
             continue;
         }
-        //-------------------------------
-        if (a != NULL && b != NULL) {
-            if (check(a, start, a_last) == 0) {
-                deleteList1(head_c);
-                return NULL; 
-            }
-            if (check(b, start, b_last) == 0) {
-                deleteList1(head_c);
-                return NULL;
-            }
+        if (a->m_Pow == b->m_Pow) {
             sum = a->m_Mul + b->m_Mul;
             if (sum == 0) {
-                if (sum == 0 && start == 1 &&
-                 a->m_Next == NULL && b->m_Next == NULL) {
-                    c = createItem(0, 0, NULL);
-                    return c;
+                // empty -> 0^0
+                if (a->m_Next == NULL && b->m_Next == NULL) {
+                        c->m_Mul = 0;
+                        c->m_Pow = 0;
+                        c->m_Next = NULL;
+                        return c;
                 }
                 a_last = a->m_Pow;
                 b_last = b->m_Pow;
@@ -118,68 +133,117 @@ TITEM * addPoly ( TITEM * x , TITEM * y ) {
                 b = b->m_Next;
                 continue;
             }
+            c->m_Mul = sum;
             a_last = a->m_Pow;
             b_last = b->m_Pow;
-            c = createItem(sum, a->m_Pow, NULL);
+            c->m_Pow = a_last;
+            if (a->m_Next == NULL && b->m_Next == NULL) {
+                c->m_Next = NULL;
+                a = a->m_Next;
+                b = b->m_Next;
+                continue;
+            }
+            c->m_Next = (TITEM*) malloc(sizeof(*c));
+            c = c->m_Next;
             a = a->m_Next;
             b = b->m_Next;
-
-            if (start == 1) {
-                start = 0;
-                head_c = c;
-                //printf("head: %d ^ %d\n", head_c->m_Mul, head_c->m_Pow);
+            continue;
+        }
+        if (a->m_Pow < b->m_Pow) {
+            if (a->m_Mul == 0 && a->m_Pow == 0 
+            && a->m_Next == NULL) {
+                b_last = b->m_Pow;
+                b = b->m_Next;
+                continue;
+            } else {
+                sum = a->m_Mul;
+                c->m_Mul = sum;
+                a_last = a->m_Pow;
+                c->m_Pow = a_last;
+                if (a->m_Next == NULL) {
+                    c->m_Next = NULL;
+                    a = a->m_Next;
+                    continue;
+                }
+                c->m_Next = (TITEM*) malloc(sizeof(*c));
+                c = c->m_Next;
             }
-            c = c->m_Next;
+            a = a->m_Next;
+            continue;
+        }
+        if (b->m_Pow < a->m_Pow) {
+            if (b->m_Mul == 0 && b->m_Pow == 0 
+            && b->m_Next == NULL) {
+                b_last = b->m_Pow;
+                b = b->m_Next;
+                continue;
+            } else {
+                sum = b->m_Mul;
+                c->m_Mul = sum;
+                b_last = b->m_Pow;
+                c->m_Pow = b_last;
+                if (b->m_Next == NULL) {
+                    c->m_Next = NULL;
+                    b = b->m_Next;
+                    continue;
+                }
+                c->m_Next = (TITEM*) malloc(sizeof(*c));
+                //printf("%d ^ %d\n", c->m_Mul, c->m_Pow);
+                c = c->m_Next;
+            }
+            b = b->m_Next;
+            continue;
         }
     }
-    return head_c;
+    return head;
 }
  
 #ifndef __PROGTEST__
 int main ( int argc, char * argv [] )
 {
     TITEM * a, * b;
-    TITEM * res = NULL;
-/*
+    TITEM * res;
+
     a = createItem (3,1,createItem (-2,2,createItem (4,3,NULL)));
     b = createItem (-3,1,createItem (2,2,createItem (-4,3,NULL)));
     res = addPoly(a,b);
+    if (res == NULL) {
+        printf("nul\n");
+    }
+    //printf("%d ^ %d\n", res->m_Mul, res->m_Pow);
     assert ( res -> m_Mul == 0 );
     assert ( res -> m_Pow == 0 );
     assert ( res -> m_Next == NULL );
     deleteList ( a );
     deleteList ( b );
     deleteList ( res );
-*/
-/*
+   
+
+
+
     a = createItem (2,1,NULL);
     b = createItem (0,0,NULL);
     res = addPoly(a,b);
+    //printf("res: %d ^ %d\n", res->m_Mul, res->m_Pow);
     assert ( res -> m_Mul == 2 );
     assert ( res -> m_Pow == 1 );
     assert ( res -> m_Next == NULL );
     deleteList ( a );
     deleteList ( b );
     deleteList ( res );
- */
- 
-    TITEM * c = NULL;
-    c = createItem(1,1, NULL);
-    TITEM * h = c;
-    c = c->m_Next;
-    c = createItem(2,2 , NULL);
-    deleteList1(h);
 
-/*
     a = createItem (2,1,NULL);
     b = createItem (3,1,createItem (4,2,createItem (2,3,createItem(1,0,NULL))));
     res = addPoly(a,b);
+    if (res == NULL) {
+        printf("nul\n");
+    }
     assert ( res == NULL );
     deleteList ( a );
     deleteList ( b );
     deleteList ( res );
-*/
-/*
+
+
     a = createItem (2,1,NULL);
     b = createItem (3,1,createItem (4,1,NULL));
     res = addPoly(a,b);
@@ -187,8 +251,8 @@ int main ( int argc, char * argv [] )
     deleteList ( a );
     deleteList ( b );
     deleteList ( res );
-    */
-/*
+    
+
     a = createItem (3,0,createItem (2,1,createItem (9,3,NULL)));
     b = createItem (0,0,createItem (4,2,createItem (-1,3,NULL)));
     res = addPoly(a,b);
@@ -196,18 +260,8 @@ int main ( int argc, char * argv [] )
     deleteList ( a );
     deleteList ( b );
     deleteList ( res );
-    */
- /*
-    a = createItem (3,0,createItem (2,1,createItem (5,3,NULL)));
-    b = createItem (-7,0,createItem (-2,1,createItem (-5,3,NULL)));
-    res = addPoly(a,b);
-    assert ( res -> m_Mul == -4 );
-    assert ( res -> m_Pow == 0 );
-    assert ( res -> m_Next == NULL );
-    deleteList ( a );
-    deleteList ( b );
-    deleteList ( res );
-*/
+    
+
     return 0;
 }
 #endif /* __PROGTEST__ */
