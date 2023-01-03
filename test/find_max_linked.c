@@ -68,12 +68,18 @@ int check (TITEM * x) {
         cnt++;
         a = a->m_Next;
     }
+    // number of elements in node
     return cnt;
 }
 
 TITEM * maxOf (TITEM **x, int nr) {
-    int max = 0, last_max = 0, get_id = 0, cnt = 0;
+    int max = 0, max_len = 0, get_id = 0, to_comp = 0;
     int * arr = (int*) malloc (nr * sizeof(int));
+    /*
+    arr -> store len for each node in x
+    max_len -> is largest node (by len)
+    get_id -> id of first max_len
+    */
     for (int i = 0; i < nr; i++) {
         max = check(x[i]);
         arr[i] = max;
@@ -81,17 +87,19 @@ TITEM * maxOf (TITEM **x, int nr) {
             free(arr);
             return NULL;
         }
-        if (max > last_max) {
-            last_max = max;
+        // new maximum
+        if (max > max_len) {
+            max_len = max;
             get_id = i;
-            cnt = 0;
+            to_comp = 0;
         }
-        if (max == last_max) {
-            cnt++;
+        // cnt -> how many nodes are max len
+        if (max == max_len) {
+            to_comp++;
         }
     }
-    //printf("cnt %d\n", cnt);
     
+    // copy x[i] to a[i]
     TITEM ** a = (TITEM**) malloc(nr * sizeof(**a));
     for (int i = 0; i < nr; i++) {
         a[i] = x[i];
@@ -99,42 +107,44 @@ TITEM * maxOf (TITEM **x, int nr) {
     
     TITEM * res = a[get_id];
     int empty = 0, id = get_id, count = 0;
+    // to_comp -> nodes we actually compare
+    // count -> inc for each digit (123 is 3 digits: count = 3)
     for (int i = 0; i < nr;) {
-        //printf("%d != %d\n", arr[i], last_max);
-        if (arr[i] != last_max) {
-            //printf("skip i = %d\n", i);
+        // node is shorter than max_len
+        if (arr[i] != max_len) {
+            // for: i < nr
             if ((i+1) == nr) i = 0;
-            i++;
+            else i++;
             continue;
         }
-
+        // check if all nodes are NULL
         if (a[i] == NULL) {
             empty++;
-            if (empty == cnt) break;
+            if (empty == to_comp) break;
             i++;
             continue;
         }
-        //printf("res = %d, a[i] = %d\n", toInt(res->m_Digit), toInt(a[i]->m_Digit));
+        // check max -> result and actual node
         if (toInt(res->m_Digit) < toInt(a[i]->m_Digit)) {
-            //printf("id = %d, i = %d\n", id, i);
             id = i;
             res = a[i];
         }
 
         a[i] = a[i]->m_Next;
         count++;
-
-        if (count == cnt) {
+        // all digits checked -> go to next
+        // z jednotek na desitky, atd.
+        if (count == to_comp) {
             count = 0;
             i = 0;
             res = res->m_Next;
+        // check digit in next node
         } else {
             i++;
         }
     }
     free(arr);
     free(a); 
-    //printf("id = %d\n", id);
     return x[id];
 }
 
