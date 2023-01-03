@@ -65,13 +65,13 @@ char toChar (int a) {
 int check (TITEM * a, int start) {
     if (a != NULL) {
         int tmp = toInt(a->m_Digit);
+        // not a number
         if (tmp == 10) {
-            printf("tu1 %c -> %d\n", a->m_Digit, tmp);
             return 1;
         }
+        // number ends with zero
         if (tmp == 0 && a->m_Next == NULL
             && start != 1) {
-            printf("tu2 %c -> %d\n", a->m_Digit, tmp);
             return 1;
         }
     }
@@ -87,11 +87,9 @@ TITEM * addList ( TITEM * a, TITEM * b ) {
     while (aa != NULL || bb != NULL) {
         start++;
         if (check(aa, start)) {
-            printf("ac\n");
             return NULL;
         }
         if (check(bb, start)) {
-            printf("b\n");
             return NULL;
         }
         if (aa == NULL) {
@@ -113,36 +111,62 @@ TITEM * addList ( TITEM * a, TITEM * b ) {
     int sum = 0, carry = 0;
     
     while (a || b) {
+        // only b
         if (a == NULL) {
-            res->m_Digit = b->m_Digit;
+            sum = toInt(b->m_Digit) + carry;
+
+            if (sum > 9) {
+                carry = 1;
+                sum -= 10;
+            } else {
+                carry = 0;
+            }
+
+            res->m_Digit = toChar(sum);
+
             if (b->m_Next == NULL) {
                 res->m_Next = NULL;
             } else {
                 res->m_Next = (TITEM*) malloc(sizeof(*res));
                 res = res->m_Next;
             }
+
             b = b->m_Next;
             continue;
         }
-        
+        // only a
         if (b == NULL) {
-            res->m_Digit = a->m_Digit;
+            sum = toInt(a->m_Digit) + carry;
+
+            if (sum > 9) {
+                carry = 1;
+                sum -= 10;
+            } else {
+                carry = 0;
+            }
+
+            res->m_Digit = toChar(sum);
+
             if (a->m_Next == NULL) {
                 res->m_Next = NULL;
             } else {
                 res->m_Next = (TITEM*) malloc(sizeof(*res));
                 res = res->m_Next;
             }
+
             a = a->m_Next;
             continue;
         }
-        printf("aa\n");
+        // both nodes
         sum = toInt(a->m_Digit) + toInt(b->m_Digit);
-        printf("sum: %d\n", sum);
+        
         if (sum > 9) {
             carry = 1;
-            sum = 0;
+            sum -= 10;
+        } else {
+            carry = 0;
         }
+
         res->m_Digit = toChar(sum);
 
         if (a->m_Next == NULL && b->m_Next == NULL) {
@@ -151,11 +175,12 @@ TITEM * addList ( TITEM * a, TITEM * b ) {
             res->m_Next = (TITEM*) malloc(sizeof(*res));
             res = res->m_Next;
         }
+
         a = a->m_Next;
         b = b->m_Next;
         continue;
     }
-
+    // last sum was 9 + something -> we need more digits
     if (carry) {
         res->m_Next = (TITEM*) malloc(sizeof(*res));
         res = res->m_Next;
@@ -184,14 +209,12 @@ int main(int argc, char *argv[]) {
     assert (res == NULL);
     deleteList(a);
     deleteList(b);
-    
  
     a = createItem('3',
          createItem('4',
           createItem('5', NULL)));
     b = createItem('0', NULL);
     res = addList(a, b);
-    //printf("res: %c\n", res->m_Digit);
     
     assert (res->m_Digit == '3');
     assert (res->m_Next->m_Digit == '4');
@@ -202,7 +225,6 @@ int main(int argc, char *argv[]) {
     deleteList(a);
     deleteList(b);
 
-    //--------------------------------------------
     a = createItem('2', createItem('3', createItem('3', NULL)));
     b = createItem('5', createItem('3', createItem('1', NULL)));
     res = addList(a, b);
@@ -213,12 +235,36 @@ int main(int argc, char *argv[]) {
     deleteList(res);
     deleteList(a);
     deleteList(b);
- 
+
     a = createItem('2', createItem('3', createItem('9', NULL)));
     b = createItem('5', createItem('3', createItem('1', NULL)));
     res = addList(a, b);
     assert (res->m_Digit == '7');
     assert (res->m_Next->m_Digit == '6');
+    assert (res->m_Next->m_Next->m_Digit == '0');
+    assert (res->m_Next->m_Next->m_Next->m_Digit == '1');
+    assert (res->m_Next->m_Next->m_Next->m_Next == NULL);
+    deleteList(res);
+    deleteList(a);
+    deleteList(b);
+
+    a = createItem('9', createItem('9', createItem('9', NULL)));
+    b = createItem('1', NULL);
+    res = addList(a, b);
+    assert (res->m_Digit == '0');
+    assert (res->m_Next->m_Digit == '0');
+    assert (res->m_Next->m_Next->m_Digit == '0');
+    assert (res->m_Next->m_Next->m_Next->m_Digit == '1');
+    assert (res->m_Next->m_Next->m_Next->m_Next == NULL);
+    deleteList(res);
+    deleteList(a);
+    deleteList(b);
+
+    a = createItem('9', createItem('9', createItem('9', NULL)));
+    b = createItem('2', NULL);
+    res = addList(a, b);
+    assert (res->m_Digit == '1');
+    assert (res->m_Next->m_Digit == '0');
     assert (res->m_Next->m_Next->m_Digit == '0');
     assert (res->m_Next->m_Next->m_Next->m_Digit == '1');
     assert (res->m_Next->m_Next->m_Next->m_Next == NULL);
