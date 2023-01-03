@@ -1,3 +1,29 @@
+/*
+Úkolem je realizovat funkci, která dokáže sčítat celá čísla zadaná jako spojové seznamy.
+
+Předpokládáme jednosměrné spojové seznamy. Prvek spojového seznamu ukládá znak - jednu cifru desítkového zápisu čísla. Čísla jsou ukládána směrem od řádu jednotek k vyšším řádům (řád jednotek je na začátku spojového seznamu). Požadovaná funkce dostane dva spojové seznamy, které reprezentují taková celá čísla. Jejím výsledkem je nově vytvořený spojový seznam, který reprezentuje výsledek součtu takto zadaných čísel. Funkce nesmí měnit spojové seznamy předané v parametrech.
+
+TITEM
+je struktura realizující prvek ve spojovém seznamu. Je deklarovaná v testovacím prostředí. Má složku m_Next, která odkazuje na další prvek v seznamu, a složku m_Digit obsahující jednu cifru daného čísla (znak '0' až '9'). Spojový seznam je ukončen hodnotou m_Next = NULL.
+addList ( a, b )
+tato funkce dostane v parametrech dvě celá čísla reprezentovaná spojovými seznamy výše. Funkce zkontroluje, že se jedná o správně zadaná celá čísla. Pokud je nějaký parametr neplatný, funkce vrátí NULL. Pokud jsou oba parametry platná celá čísla, funkce vrátí nově vytvořený spojový seznam obsahující součet čísel z parametrů.
+Spojový seznam reprezentuje platné celé číslo, pokud:
+obsahuje alespoň jednu cifru (není NULL),
+obsahuje pouze cifry '0' až '9',
+číslo neobsahuje zbytečné úvodní nuly (tedy v naší reprezentaci spojový seznam nekončí zbytečnými nulami).
+CISLO A:
+
+[2] → [3] → [9] → [NULL]
+
+Cislo B:
+
+[5] → [3] → [1] → [NULL]
+
+Vysledek:
+
+[7] → [6] → [0] → [1] → [NULL]
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -142,7 +168,7 @@ TITEM * addList ( TITEM * a, TITEM * b ) {
 
 int main(int argc, char *argv[]) {
     TITEM * a, * b, * res;
- /*
+ 
     a = createItem('x', NULL);
     b = createItem('3', NULL);
     res = addList(a, b);
@@ -158,7 +184,7 @@ int main(int argc, char *argv[]) {
     assert (res == NULL);
     deleteList(a);
     deleteList(b);
-    */
+    
  
     a = createItem('3',
          createItem('4',

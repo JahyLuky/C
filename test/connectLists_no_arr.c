@@ -1,4 +1,5 @@
 /*
+/*
 Úkolem je realizovat funkci, která dokáže spojit spojové seznamy do jednoho. Předpokládejme jednosměrné spojové seznamy. Prvek spojového seznamu ukládá int. Prvky v spojovém seznamu jsou uloženy v neklesajícím pořadí. Předpokládaná funkce dostane pole s odkazy na takto organizované spojové seznamy a počet prvků. Výsledkem bude jeden spojový seznam, který bude obsahovat prvky z předaných spojových seznamů přepojené do jednoho spojového seznamu. Ve výsledném spojovém seznamu budou prvky seřazeny vzestupně. Funkce kontroluje že předané spojové seznamy jsou neprázdné a neklesající, jinak vrací NULL.
 
 Příklady podle ukázky:
@@ -51,7 +52,6 @@ Výstup:
 NULL
 */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -75,57 +75,94 @@ void delList ( Tnode * l ) {
   free ( l );
 }
 
-int compare_ints (const void * a, const void * b) {
-    int x = *(const int*) a;
-    int y = *(const int*) b;
-    if (x < y) return -1;
-    if (x > y) return 1;
-    return 0;
+void delList1 ( Tnode * l ) {
+  if ( l != NULL ) {
+    printf("del = %d\n", l->m_Val);
+    delList1( l->m_Next );
+  }
+  free ( l );
 }
 
-Tnode * compareList ( Tnode ** a, int nr ) {
+Tnode * compareList ( Tnode ** x, int nr ) {
     Tnode * tmp = NULL;
-    int last = 0, n = 1, size = 0;
-    int * arr = (int*) malloc(n * sizeof(int));
+    int last = 0;
     for (int i = 0; i < nr; i++) {
-        if (a[i] == NULL) {
-            free(arr);
+        if (x[i] == NULL) {
             return NULL;
         }
-        tmp = a[i];
-        last = a[i]->m_Val;
+        tmp = x[i];
+        last = x[i]->m_Val;
         while (tmp) {
             if (tmp->m_Val < last) {
-                free(arr);
                 return NULL;
             }
             last = tmp->m_Val;
-            printf("last = %d\n", last);
-            arr[size] = last;
-            size++;
-            if (size > n) {
-                n *= 2;
-                arr = (int*) realloc(arr, n * sizeof(int));
-            }
             tmp = tmp->m_Next;
         }
     }
 
+    Tnode ** a = (Tnode**) malloc(nr * sizeof(*a));
+    for (int i = 0; i < nr; i++) {
+        a[i] = x[i];
+    }
     Tnode * res = (Tnode*) malloc(sizeof(*res));
     Tnode * head = res;
-    
-    qsort(arr, size, sizeof(int), compare_ints);
-    for (int i = 0; i < size; i++) {
-        printf("%d\n", arr[i]);
-        res->m_Val = arr[i];
-        if (i == (size - 1)) {
-            res->m_Next = NULL;
+    Tnode * prev = NULL;
+
+    int id = 1, min = 0, nul = 0, flag = 0, cc = 0;
+    while (1) {
+        if (a[min] == NULL) {
+            min = id;
+        }
+        while (a[id] == NULL) {
+            id++;
+            nul++;
+            flag = 1;
+        }
+        if (nul == nr) {
             break;
         }
-        res->m_Next = (Tnode*) malloc(sizeof(*res));
-        res = res->m_Next;
+        if (flag == 1) {
+            flag = 0;
+            min = id;
+        }
+
+        if (a[min]->m_Val > a[id]->m_Val) {
+            min = id;
+        }
+
+        if (nul == nr - 1) {
+            cc = 1;
+            break;
+        }
+        id++;
+        if (id == nr) {
+            id = 0;
+            res->m_Val = a[min]->m_Val;
+            res->m_Next = (Tnode*) malloc(sizeof(*res));
+            prev = res;
+            res = res->m_Next;
+            a[min] = a[min]->m_Next;
+        }
     }
-    free(arr);
+
+    if (cc) {
+        while (a[id]) {
+            res->m_Val = a[id]->m_Val;
+            res->m_Next = (Tnode*) malloc(sizeof(*res));
+            prev = res;
+            res = res->m_Next;
+            a[id] = a[id]->m_Next;
+        }
+        
+    }
+    free(res);
+    prev->m_Next = NULL;
+    //printf("res = %d\n", res->m_Val);
+    for (int i = 0; i < nr; ++i) {
+        free(a[i]);
+    }
+    free(a);
     return head;
 }
  
@@ -163,6 +200,12 @@ int main ( int argc, char * argv [] ) {
                    createItem ( 9, NULL ))))));
   res = compareList ( a, 2 );
  
+    Tnode * tmp = res;
+    while (tmp) {
+        printf("%d\n", tmp->m_Val);
+        tmp = tmp->m_Next;
+    }
+
   assert(res->m_Val == 1);
   assert(res->m_Next->m_Val == 2);
   assert(res->m_Next->m_Next->m_Val == 3);
@@ -177,9 +220,11 @@ int main ( int argc, char * argv [] ) {
  
   delList ( res );
   for(int i = 0; i < 2;i++){
-    delList(a[i]);
+    delList1(a[i]);
   }
+  
  
+/*
   a[0] = createItem ( 1,
            createItem ( 7,
              createItem ( 24, NULL )));
@@ -190,6 +235,12 @@ int main ( int argc, char * argv [] ) {
            createItem ( 19, NULL ));
   res = compareList ( a, 3 );
  
+    tmp = res;
+    while (tmp) {
+        printf("%d\n", tmp->m_Val);
+        tmp = tmp->m_Next;
+    }
+
   assert(res->m_Val == -3);
   assert(res->m_Next->m_Val == 1);
   assert(res->m_Next->m_Next->m_Val == 3);
@@ -204,7 +255,8 @@ int main ( int argc, char * argv [] ) {
   for(int i = 0; i < 3;i++){
     delList(a[i]);
   }
- 
+  */
+ /*
   a[0] = createItem ( 15,
            createItem ( 19,
              createItem ( 23,
@@ -343,6 +395,6 @@ int main ( int argc, char * argv [] ) {
   for(int i = 0; i < 5;i++){
     delList(a[i]);
   }
- 
+ */
   return 0;
 }

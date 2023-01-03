@@ -1,3 +1,18 @@
+/*
+Úkolem je realizovat funkci, která dokáže nalézt největší číslo v poli. Komplikací je, že čísla jsou reprezentovaná jako spojový seznam jejich cifer.
+
+Předpokládáme jednosměrné spojové seznamy. Prvek spojového seznamu ukládá znak - jednu cifru zápisu čísla. Čísla jsou ukládána směrem od řádu jednotek k vyšším řádům (řád jednotek je na začátku spojového seznamu). Požadovaná funkce dostane pole s odkazy na taková čísla (spojové seznamy) a počet prvků v poli. Jejím výsledkem bude spojový seznam, který reprezentuje největší číslo v zadaném poli.
+TITEM je struktura realizující prvek ve spojovém seznamu. Je deklarovaná v testovacím prostředí. Má složku m_Next, která odkazuje na další prvek v seznamu, a složku m_Digit obsahující jednu cifru daného čísla (znak '0' až '9'). Spojový seznam je ukončen hodnotou NULL.
+
+maxOf ( x, nr )
+tato funkce dostane v parametrech pole x se spojovými seznamy, každý spojový seznam reprezentuje jako desítkové číslo. Druhým parametrem je počet prvků v poli. Funkce zkontroluje, že se jedná o správně zadaná celá čísla. Pokud je nějaký parametr neplatný nebo pokud pole obsahuje nulový počet prvků, funkce vrátí NULL. V opačném případě (platné vstupní parametry) funkce nalezne největší z předaných čísel a vrátí odkaz na něj. Pokud je největší číslo v poli obsaženo vícekrát, má funkce vrátit odkaz na první výskyt maxima (viz druhý příklad v ukázkovém běhu).
+
+Spojový seznam reprezentuje platné celé číslo, pokud:
+
+obsahuje alespoň jednu cifru (není NULL),
+obsahuje pouze cifry '0' až '9'
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
