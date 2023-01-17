@@ -1,0 +1,5 @@
+Studenti:
+R: Ladislav Vagner
+R: Jan Travnicek
+P: Ladislav Vagner
+P: Jan Travnicek
