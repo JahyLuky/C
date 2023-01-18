@@ -39,10 +39,6 @@ typedef struct kostkaT {
     char name[64];
 } kostka;
 
-int toInt (char a) {
-    return a - '0';
-}
-
 void print_domino (kostka k) {
     printf("[%d,    %d,     %d,     %d]\n", k.dom[0].n, k.dom[1].n, k.dom[2].n, k.dom[3].n);
     printf("(%d, %d)|(%d, %d)|(%d, %d)|(%d, %d)\n", k.dom[0].x, k.dom[0].y, k.dom[1].x, k.dom[1].y, k.dom[2].x, k.dom[2].y, k.dom[3].x, k.dom[3].y);
@@ -102,21 +98,17 @@ int main (void) {
             free_kostka(k, n);
             }
             return 1;
-        }
-
-        
-        
+        }      
         if (input != ']') {
             printf("err2\n");
             if (n == 0) {
                 free(k[0].dom);
                 free(k);
             } else {
-            free_kostka(k, n);
+                free_kostka(k, n);
             }
             return 1;
         }
-
         
         k[n].dom[0].n = a;
         k[n].dom[0].x = b;
@@ -193,8 +185,8 @@ int main (void) {
     }
     printf("\n");
     
-
     free_kostka(k, n);
     free(arr);
+    
     return 0;
 }
