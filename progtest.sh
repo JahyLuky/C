@@ -1,5 +1,5 @@
-	#!/bin/bash
- 
+#!/bin/bash 
+
 # Zmente, pokud se vas binarni soubor jmenuje jinak
 PROGRAM=./a.out
  

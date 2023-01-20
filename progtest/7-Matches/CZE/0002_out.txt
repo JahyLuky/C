@@ -1,0 +1,3 @@
+Pocet sirek:
+Velikost skoku:
+Celkem reseni: 0
