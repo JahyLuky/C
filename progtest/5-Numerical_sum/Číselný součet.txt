@@ -1,0 +1,14 @@
+Úkolem je realizovat program, který pro zadanou posloupnost hodnot rozhodne, zda z ní lze vybrat dvojici s požadovaným součtem.
+
+Na vstupu programu je posloupnost celých čísel xi. Čísla jsou oddělená čárkami. Za touto posloupností následuje znak otazník a dále sekvence celých čísel y - dotazů. Dotazů může být libovolné množství. Úkolem programu je rozhodnout, zda se číslo y dá sestavit jako součet dvou čísel xi+xj, i ≠ j.
+
+Výstupem programu je rozhodnutí ano/ne pro každý dotaz y.
+
+Program musí ošetřovat vstupní data. Pokud je vstup neplatný, program to musí zjistit, vypsat chybové hlášení a ukončit se. Za chybu je považováno:
+
+nečíselné zadání xi,
+čísla xi nejsou oddělená čárkami,
+méně než 2 čísla xi,
+chybějící znak ?
+nečíselné zadání dotazů y.
+Program je spouštěn v omezeném prostředí. Je omezen dobou běhu a velikostí dostupné paměti. Pro zvládnutí povinných testů postačuje správná implementace naivního algoritmu. Je potřeba, aby program zbytečně neplýtval pamětí. Pro zvládnutí bonusu je potřeba algoritmus, který pracuje rychle i pro dlouhé posloupnosti xi.
