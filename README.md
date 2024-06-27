@@ -2,8 +2,6 @@
 
 Welcome to my repository containing C code projects from my university coursework (CTU FIT, BI-PA1). This collection showcases a variety of assignments and projects, demonstrating fundamental and advanced concepts in C programming.
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-
 ## Table of Contents
 
 - [About the Repository](#about-the-repository)
