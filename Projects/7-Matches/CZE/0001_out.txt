@@ -1,0 +1,5 @@
+Pocet sirek:
+Velikost skoku:
+0R
+1L
+Celkem reseni: 2
