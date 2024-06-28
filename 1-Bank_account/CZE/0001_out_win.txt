@@ -1,4 +1,0 @@
-Zadejte kreditni urok [%]:
-Zadejte debetni urok [%]:
-Zadejte transakce:
-Zustatek: -491.27

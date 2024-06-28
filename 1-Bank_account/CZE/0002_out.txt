@@ -1,2 +1,0 @@
-Zadejte kreditni urok [%]:
-Nespravny vstup.
