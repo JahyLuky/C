@@ -1,3 +1,0 @@
-Pocet sirek:
-Velikost skoku:
-Nespravny vstup.

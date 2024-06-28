@@ -1,4 +1,0 @@
-Obrazec #1
-Obrazec #2
-Obvod: obdelnik #1 < trojuhelnik #2
-Obsah: obdelnik #1 = trojuhelnik #2
