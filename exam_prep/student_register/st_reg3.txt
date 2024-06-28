@@ -1,6 +1,0 @@
-Studenti:
-R: Ladislav Vagner
-R: Jan Travnicek
-R: Janek Pepek
-P: vaGneR lAdislaV
-P: Jan Travnicek
