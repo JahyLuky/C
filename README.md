@@ -75,3 +75,7 @@ Here are some of the key projects included in this repository:
      - **Singly Linked Lists**: Data structure where each element points to the next element in the sequence.
      - **Dynamic Memory Allocation**: Allocating and deallocating memory for list elements.
      - **Sorting**: Algorithms to rearrange list elements based on specific criteria.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for more details.
